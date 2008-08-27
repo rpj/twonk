@@ -1,0 +1,53 @@
+8
+
+dir
+10
+http://svn.cocoasourcecode.com/MGTwitterEngine/English.lproj/MainMenu.nib
+http://svn.cocoasourcecode.com
+
+
+
+2008-08-09T22:05:47.520240Z
+9
+mattgemmell
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+fad7f400-0e54-0410-bf1d-e368f886e4d4
+
+keyedobjects.nib
+file
+
+
+
+
+2008-08-22T19:25:58.000000Z
+238af1186227452f1998fe047d5a1cc2
+2008-08-09T22:05:47.520240Z
+9
+mattgemmell
+has-props
+
+designable.nib
+file
+
+
+
+
+2008-08-22T19:25:58.000000Z
+c0bea8608178f459e968b62354ed6c2e
+2008-08-09T22:05:47.520240Z
+9
+mattgemmell
+
