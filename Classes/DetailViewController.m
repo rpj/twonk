@@ -52,7 +52,6 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 @implementation DetailViewController
 
 @synthesize detailItem;
-@synthesize rootCtrlr = _superCtrlr;
 
 /////
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType;
@@ -115,8 +114,10 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 			UIViewController* webCtrl = [[UIViewController alloc] init];
 			webCtrl.view = webView;
 			
-			[webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:cell.text]]];
-			[[_superCtrlr navigationController] pushViewController:webCtrl animated:YES];
+			NSURL *url = [NSURL URLWithString:cell.text];
+			webCtrl.title = [url host];
+			[webView loadRequest:[NSURLRequest requestWithURL:url]];
+			[[self navigationController] pushViewController:webCtrl animated:YES];
 			
 			[webCtrl release];
 		}

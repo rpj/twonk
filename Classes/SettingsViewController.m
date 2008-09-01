@@ -31,7 +31,7 @@
 		_password.text = _enterPass = pass;
 	}
 	
-	[self navigationItem].title = @"Twonk Settings";
+	[self navigationItem].title = @"User Setup";
 	[super viewWillAppear:animated];
 }
 

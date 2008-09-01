@@ -56,7 +56,7 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 }
 
 
-- (void) refreshWithUsername:(NSString*)uname andPassword:(NSString*)pass;
+- (void) reloadWithUsername:(NSString*)uname andPassword:(NSString*)pass;
 {
 	if (uname && pass) {
 		_validUser = NO;
@@ -72,10 +72,10 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 	}
 }
 
-- (void) refreshWithStandardDefaults;
+- (void) reloadWithStandardUserInfo;
 {
-	[self refreshWithUsername:[[NSUserDefaults standardUserDefaults] stringForKey:@"username"]
-				  andPassword:[[NSUserDefaults standardUserDefaults] stringForKey:@"password"]];
+	[self reloadWithUsername:[[NSUserDefaults standardUserDefaults] stringForKey:@"username"]
+				 andPassword:[[NSUserDefaults standardUserDefaults] stringForKey:@"password"]];
 }
 
 
@@ -86,7 +86,7 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 		
 		if ((uname = [[NSUserDefaults standardUserDefaults] stringForKey:@"username"]) &&
 			(pass = [[NSUserDefaults standardUserDefaults] stringForKey:@"password"])) {
-			[self refreshWithUsername:uname andPassword:pass];
+			[self reloadWithUsername:uname andPassword:pass];
 		}
     }
     return self;

@@ -20,6 +20,6 @@
 - (unsigned)countOfList;
 - (id)objectInListAtIndex:(unsigned)theIndex;
 
-- (void) refreshWithUsername:(NSString*)uname andPassword:(NSString*)pass;
-- (void) refreshWithStandardDefaults;
+- (void) reloadWithUsername:(NSString*)uname andPassword:(NSString*)pass;
+- (void) reloadWithStandardUserInfo;
 @end

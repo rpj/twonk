@@ -77,7 +77,7 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 	
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 	self.title = NSLocalizedString(([NSString stringWithFormat:@"Loading %@", [[NSUserDefaults standardUserDefaults] stringForKey:@"username"]]), @"Master view navigation title");
-	[self.dataController refreshWithStandardDefaults];
+	[self.dataController reloadWithStandardUserInfo];
 }
 
 
@@ -93,10 +93,13 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 	[self _showSettings];
 }
 
+- (void) refreshButton:(id)sender;
+{
+}
+
 
 - (id)initWithStyle:(UITableViewStyle)style {
     if (self = [super initWithStyle:style]) {
-		heights = nil;
         self.title = NSLocalizedString(@"Loading...", @"Master view navigation title");
 		self.dataController = nil;
 		
@@ -116,6 +119,10 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 																					  style:UIBarButtonItemStylePlain
 																					 target:self 
 																					 action:@selector(settingsButton:)] animated:YES];
+		
+		[[self navigationItem] setLeftBarButtonItem:[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
+																								  target:self
+																								  action:@selector(refreshButton:)] animated:YES];
 	}
 	
 	if (![[NSUserDefaults standardUserDefaults] stringForKey:@"username"] || 
@@ -142,13 +149,7 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 
 
 - (CGFloat)tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath {
-	/*NSNumber* num = nil;
-	if ((num = [heights objectForKey:[NSString stringWithFormat:@"%d", indexPath.row]])) {
-		NSLog(@"returning height %f", [num floatValue] + 5.0);
-		return [num floatValue] + 5.0;
-	}
-	 */
-	
+	// wouldn't it be nice if this could be dynamic, based on the size of the content in the cell...
 	return kRowHeightDefault;
 }
 
@@ -167,53 +168,36 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 		tView = (UITextView*)[cell.contentView.subviews objectAtIndex:1];
 	}
 	else {
-		CGRect nFrame = CGRectMake(0, 0, cell.bounds.size.width - 25, cell.bounds.size.height - 5);
+		CGRect nFrame = CGRectMake(0, 0, cell.frame.size.width - 25, cell.frame.size.height);
 		tView = [[UITextView alloc] initWithFrame:nFrame];	
 		tView.scrollEnabled = NO;
 		tView.editable = NO;
 		tView.pagingEnabled = NO;
 		tView.bounces = NO;
-		tView.font = [UIFont systemFontOfSize: 12.0];
 		tView.userInteractionEnabled = NO;
+		tView.font = [UIFont systemFontOfSize: 12.0];
 		
 		[cell.contentView addSubview:tView];
 	}
-    
+	
     // Get the object to display and set the value in the cell
     NSDictionary *itemAtIndex = (NSDictionary *)[dataController objectInListAtIndex:indexPath.row];
-	NSString* text = [NSString stringWithFormat:@"%@: %@", [(NSDictionary*)[itemAtIndex objectForKey:@"user"] objectForKey:@"screen_name"], [itemAtIndex objectForKey:@"text"]];
+	NSString* text = [NSString stringWithFormat:@"[%@] %@", [(NSDictionary*)[itemAtIndex objectForKey:@"user"] objectForKey:@"screen_name"], [itemAtIndex objectForKey:@"text"]];
 	tView.text = text;
 	
-	if (!heights) heights = [[NSMutableDictionary alloc] init];
-	
-	int idx = indexPath.row;
-	NSString* idxKey = [NSString stringWithFormat:@"%d", idx];
-	[heights setValue:[NSNumber numberWithFloat:tView.contentSize.height] forKey:idxKey];
-	//if (idx < [heights count] && [heights objectAtIndex:idx]) [heights removeObjectAtIndex:idx];
-	/*else if (idx >= [heights count]) {
-		NSMutableArray* temp = [[NSMutableArray alloc] initWithCapacity:(idx+1)];
-		[temp addObjectsFromArray:heights];
-		[heights release];
-		heights = temp;
-	}*/
-	
-	//NSLog(@"Scroll view content size: %@", NSStringFromCGSize(tView.contentSize));
-
-	//[tView setNeedsDisplay];
+	// seems that if we adjust the text view's frame size here (after knowing how high the content size will be),
+	// we don't get truncated text any longer.
+	// however, I believe this is Doing It Wrong, because there are strange table view drawing problems when you
+	// scroll now... oh well, at least it's getting closer.
+	tView.frame = CGRectMake(tView.frame.origin.x, tView.frame.origin.y, tView.contentSize.width, tView.contentSize.height);
 	
     return cell;
 }
 
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    /*
-     Create the detail view controller and set its inspected item to the currently-selected item
-     */
     DetailViewController *detailViewController = [[DetailViewController alloc] initWithStyle:UITableViewStyleGrouped];
-    
     detailViewController.detailItem = [dataController objectInListAtIndex:indexPath.row];
-	detailViewController.rootCtrlr = self;
     
     // Push the detail view controller
     [[self navigationController] pushViewController:detailViewController animated:YES];
@@ -222,7 +206,6 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 
 
 - (void)dealloc {
-	[heights release];
     [dataController release];
     [super dealloc];
 }
