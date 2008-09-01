@@ -48,17 +48,12 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 
 #import <UIKit/UIKit.h>
 
-@class DataController;
-
 @interface SimpleDrillDownAppDelegate : NSObject <UIApplicationDelegate> {
-	
     UIWindow *window;
 	UINavigationController *navigationController;
-    DataController *dataController;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) UINavigationController *navigationController;
-@property (nonatomic, retain) DataController *dataController;
 
 @end

@@ -48,8 +48,9 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 #import "RootViewController.h"
 #import "DataController.h"
 #import "DetailViewController.h"
+#import "SettingsViewController.h"
 
-#define kRowHeightDefault		75.0
+#define kRowHeightDefault		100.0
 
 
 @implementation RootViewController
@@ -59,8 +60,37 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 - (void) _dataUpdated:(NSNotification*)notify;
 {
 	[self.tableView reloadData];
-	self.title = NSLocalizedString(@"Twonk", @"Master view navigation title");
+	self.title = NSLocalizedString(([NSString stringWithFormat:@"%@'s Friends", [[NSUserDefaults standardUserDefaults] stringForKey:@"username"]]), 
+								   @"Master view navigation title");
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+}
+
+
+- (void) _userAndPassSet:(NSNotification*)notify;
+{
+	if (!self.dataController) {
+		// Create the data controller
+		DataController *controller = [[DataController alloc] init];
+		self.dataController = controller;
+		[controller release];
+	}
+	
+	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+	self.title = NSLocalizedString(([NSString stringWithFormat:@"Loading %@", [[NSUserDefaults standardUserDefaults] stringForKey:@"username"]]), @"Master view navigation title");
+	[self.dataController refreshWithStandardDefaults];
+}
+
+
+- (void) _showSettings;
+{
+	SettingsViewController *settings = [[SettingsViewController alloc] initWithNibName:@"SettingsView" bundle:nil];
+	[[self navigationController] pushViewController:settings animated:YES];
+	[settings release];
+}
+
+- (void) settingsButton:(id)sender;
+{
+	[self _showSettings];
 }
 
 
@@ -68,11 +98,33 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
     if (self = [super initWithStyle:style]) {
 		heights = nil;
         self.title = NSLocalizedString(@"Loading...", @"Master view navigation title");
+		self.dataController = nil;
+		
 		((UITableView*)self.view).rowHeight = kRowHeightDefault;
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_dataUpdated:) name:kDataControllerUpdatedData object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_userAndPassSet:) name:@"UserAndPassSet" object:nil];
     }
+	
     return self;
+}
+
+- (void) finishSetup;
+{
+	if ([self navigationItem]) {
+		[[self navigationItem] setRightBarButtonItem:[[UIBarButtonItem alloc] initWithTitle:@"Setup"
+																					  style:UIBarButtonItemStylePlain
+																					 target:self 
+																					 action:@selector(settingsButton:)] animated:YES];
+	}
+	
+	if (![[NSUserDefaults standardUserDefaults] stringForKey:@"username"] || 
+		![[NSUserDefaults standardUserDefaults] stringForKey:@"password"]) {
+		[self _showSettings];
+	}
+	else {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"UserAndPassSet" object:nil];
+	}
 }
 
 
@@ -90,11 +142,12 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 
 
 - (CGFloat)tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath {
-	NSNumber* num = nil;
+	/*NSNumber* num = nil;
 	if ((num = [heights objectForKey:[NSString stringWithFormat:@"%d", indexPath.row]])) {
 		NSLog(@"returning height %f", [num floatValue] + 5.0);
 		return [num floatValue] + 5.0;
 	}
+	 */
 	
 	return kRowHeightDefault;
 }

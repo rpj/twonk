@@ -32,6 +32,8 @@
 		942CF6DE0E5F4A700050FA3D /* Source Code License.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 942CF6C80E5F4A700050FA3D /* Source Code License.rtf */; };
 		942CF6DF0E5F4A700050FA3D /* TODO in Resources */ = {isa = PBXBuildFile; fileRef = 942CF6C90E5F4A700050FA3D /* TODO */; };
 		942CF8460E5F57FB0050FA3D /* TwitterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 942CF8450E5F57FB0050FA3D /* TwitterCell.m */; };
+		94E322840E6C77D100E8D07A /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 94E322830E6C77D100E8D07A /* SettingsViewController.m */; };
+		94E322860E6C77DD00E8D07A /* SettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 94E322850E6C77DD00E8D07A /* SettingsView.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,7 +51,6 @@
 		28554E2B0DAC293600168C19 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
 		28874A290D9DB87600CC0247 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
 		28A0A21F0DCBAA090060EDFB /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
-		28F1A73C0DC932C300332FD8 /* ReadMe.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ReadMe.txt; sourceTree = "<group>"; };
 		28F25CCA0D64C1EB00158CCD /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		28F25CCB0D64C1EB00158CCD /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -85,6 +86,9 @@
 		942CF8450E5F57FB0050FA3D /* TwitterCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TwitterCell.m; sourceTree = "<group>"; };
 		942CF8470E5F580E0050FA3D /* TwitterMessageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwitterMessageView.h; sourceTree = "<group>"; };
 		942CF8480E5F580E0050FA3D /* TwitterMessageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TwitterMessageView.m; sourceTree = "<group>"; };
+		94E322820E6C77D100E8D07A /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
+		94E322830E6C77D100E8D07A /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
+		94E322850E6C77DD00E8D07A /* SettingsView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SettingsView.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,6 +120,8 @@
 				942CF8450E5F57FB0050FA3D /* TwitterCell.m */,
 				942CF8470E5F580E0050FA3D /* TwitterMessageView.h */,
 				942CF8480E5F580E0050FA3D /* TwitterMessageView.m */,
+				94E322820E6C77D100E8D07A /* SettingsViewController.h */,
+				94E322830E6C77D100E8D07A /* SettingsViewController.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -131,7 +137,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				28F1A73C0DC932C300332FD8 /* ReadMe.txt */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -155,6 +160,7 @@
 			isa = PBXGroup;
 			children = (
 				28874A290D9DB87600CC0247 /* MainWindow.xib */,
+				94E322850E6C77DD00E8D07A /* SettingsView.xib */,
 				28A0A21F0DCBAA090060EDFB /* Default.png */,
 				28554E2B0DAC293600168C19 /* Icon.png */,
 				8D1107310486CEB800E47090 /* Info.plist */,
@@ -231,7 +237,7 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Twonk" */;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "twonk" */;
 			compatibilityVersion = "Xcode 3.1";
 			hasScannedForEncodings = 1;
 			knownRegions = (
@@ -262,6 +268,7 @@
 				942CF6DD0E5F4A700050FA3D /* README.txt in Resources */,
 				942CF6DE0E5F4A700050FA3D /* Source Code License.rtf in Resources */,
 				942CF6DF0E5F4A700050FA3D /* TODO in Resources */,
+				94E322860E6C77DD00E8D07A /* SettingsView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -287,6 +294,7 @@
 				942CF6DB0E5F4A700050FA3D /* NSData+Base64.m in Sources */,
 				942CF6DC0E5F4A700050FA3D /* NSString+UUID.m in Sources */,
 				942CF8460E5F57FB0050FA3D /* TwitterCell.m in Sources */,
+				94E322840E6C77D100E8D07A /* SettingsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -377,7 +385,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Twonk" */ = {
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "twonk" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,
