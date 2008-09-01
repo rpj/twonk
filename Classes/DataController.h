@@ -17,9 +17,11 @@
     NSMutableArray *list;
 }
 
+@property (nonatomic, retain) NSString* lastReqID;
+
 - (unsigned)countOfList;
 - (id)objectInListAtIndex:(unsigned)theIndex;
 
-- (void) reloadWithUsername:(NSString*)uname andPassword:(NSString*)pass;
 - (void) reloadWithStandardUserInfo;
+- (void) refreshFriendsTimeline;
 @end

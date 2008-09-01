@@ -4,17 +4,18 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 
 #import "DataController.h"
 
+#define TWEET_NUM	100
 
 @implementation DataController
 
+@synthesize lastReqID = _lastReqID;
 
 - (void)requestSucceeded:(NSString *)requestIdentifier;
 {
 	if ([requestIdentifier isEqualToString:_lastReqID]) {
 		if (!_validUser) {
 			_validUser = YES;
-			[_lastReqID release];
-			_lastReqID = [[_twitter getFollowedTimelineFor:nil since:nil startingAtPage:0 count:200] retain];
+			self.lastReqID = [_twitter getFollowedTimelineFor:nil since:nil startingAtPage:0 count:TWEET_NUM];
 		}
 	}
 }
@@ -31,13 +32,25 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 
 - (void)statusesReceived:(NSArray *)statuses forRequest:(NSString *)identifier;
 {
+	NSAutoreleasePool *tPool = [[NSAutoreleasePool alloc] init];
+	
 	if ([identifier isEqualToString:_lastReqID] && [statuses count]) {
-		_lastUpdateID = [(NSNumber*)[(NSDictionary*)[statuses objectAtIndex:0] objectForKey:@"id"] intValue];
-		[list insertObjects:statuses atIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [statuses count])]];
-		
-		[[NSNotificationCenter defaultCenter] postNotificationName:kDataControllerUpdatedData object:self userInfo:nil];
+		if (_lastUpdateID == -1) {
+			_lastUpdateID = [(NSNumber*)[(NSDictionary*)[statuses objectAtIndex:0] objectForKey:@"id"] intValue];
+			[list insertObjects:statuses atIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [statuses count])]];
+		}
+		else {
+			NSMutableArray *newList = [NSMutableArray arrayWithArray:statuses];
+			[newList addObjectsFromArray:list];
+			[list release];
+			list = [newList retain];
+		}
 	}
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:kDataControllerUpdatedData object:self userInfo:nil];
+	[tPool release];
 }
+
 
 - (void)directMessagesReceived:(NSArray *)messages forRequest:(NSString *)identifier;
 {
@@ -56,25 +69,37 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 }
 
 
-- (void) reloadWithUsername:(NSString*)uname andPassword:(NSString*)pass;
+
+- (void) _reloadWithUsername:(NSString*)uname andPassword:(NSString*)pass;
 {
 	if (uname && pass) {
 		_validUser = NO;
 		_lastUpdateID = -1;
 		
 		[list release];
-		list = [[NSMutableArray alloc] initWithCapacity:200];
+		list = [[NSMutableArray alloc] initWithCapacity:TWEET_NUM];
 		
+		NSAutoreleasePool *tPool = [[NSAutoreleasePool alloc] init];
+		[_twitter release];
 		_twitter = [[MGTwitterEngine alloc] initWithDelegate:self];
 		[_twitter setUsername:uname password:pass];
-		[_lastReqID release];
-		_lastReqID = [[_twitter checkUserCredentials] retain];
+		self.lastReqID = [_twitter checkUserCredentials];
+		[tPool release];
 	}
+}
+
+- (void) refreshFriendsTimeline;
+{
+	NSString *user = [[NSUserDefaults standardUserDefaults] stringForKey:@"username"];
+
+	// XXX: correlating a member variable and a user default entry could get hairy, we should be careful...
+	if (user)
+		self.lastReqID = [_twitter getFollowedTimelineFor:user sinceID:_lastUpdateID startingAtPage:0 count:TWEET_NUM];
 }
 
 - (void) reloadWithStandardUserInfo;
 {
-	[self reloadWithUsername:[[NSUserDefaults standardUserDefaults] stringForKey:@"username"]
+	[self _reloadWithUsername:[[NSUserDefaults standardUserDefaults] stringForKey:@"username"]
 				 andPassword:[[NSUserDefaults standardUserDefaults] stringForKey:@"password"]];
 }
 
@@ -86,7 +111,7 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 		
 		if ((uname = [[NSUserDefaults standardUserDefaults] stringForKey:@"username"]) &&
 			(pass = [[NSUserDefaults standardUserDefaults] stringForKey:@"password"])) {
-			[self reloadWithUsername:uname andPassword:pass];
+			[self _reloadWithUsername:uname andPassword:pass];
 		}
     }
     return self;

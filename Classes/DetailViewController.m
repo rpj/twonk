@@ -76,6 +76,14 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 
 /////
 
+- (void) dealloc;
+{
+	[(UIWebView*)_webViewCtrlr.view stopLoading];
+	[_webViewCtrlr.view release];
+	[_webViewCtrlr release];
+	
+	[super dealloc];
+}
 
 - (void)viewWillAppear:(BOOL)animated {
     // Update the view with current data before it is displayed
@@ -111,15 +119,13 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 			webView.scalesPageToFit = YES;
 			webView.delegate = self;
 			
-			UIViewController* webCtrl = [[UIViewController alloc] init];
-			webCtrl.view = webView;
+			_webViewCtrlr = [[UIViewController alloc] init];
+			_webViewCtrlr.view = webView;
 			
 			NSURL *url = [NSURL URLWithString:cell.text];
-			webCtrl.title = [url host];
+			_webViewCtrlr.title = [url host];
 			[webView loadRequest:[NSURLRequest requestWithURL:url]];
-			[[self navigationController] pushViewController:webCtrl animated:YES];
-			
-			[webCtrl release];
+			[[self navigationController] pushViewController:_webViewCtrlr animated:YES];
 		}
 	}
 }
