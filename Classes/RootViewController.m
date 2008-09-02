@@ -6,7 +6,7 @@
 #import "DetailViewController.h"
 #import "SettingsViewController.h"
 
-#define kRowHeightDefault		100.0
+#define kRowHeightDefault		90.0
 #define kDefaultTweetFontSize	13.0
 #define kDefaultRefreshInterval	30.0
 
@@ -18,6 +18,7 @@
 - (void) _dataUpdated:(NSNotification*)notify;
 {
 	[self.tableView reloadData];
+	
 	self.title = NSLocalizedString(([NSString stringWithFormat:@"%@'s Friends", [[NSUserDefaults standardUserDefaults] stringForKey:@"username"]]), 
 								   @"Master view navigation title");
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
@@ -37,7 +38,8 @@
 	}
 	
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-	self.title = NSLocalizedString(([NSString stringWithFormat:@"Loading %@", [[NSUserDefaults standardUserDefaults] stringForKey:@"username"]]), @"Master view navigation title");
+	self.title = NSLocalizedString(([NSString stringWithFormat:@"Loading %@", [[NSUserDefaults standardUserDefaults] stringForKey:@"username"]]), 
+								   @"Master view navigation title");
 	[self.dataController reloadWithStandardUserInfo];
 }
 
@@ -69,7 +71,7 @@
 
 - (id)initWithStyle:(UITableViewStyle)style {
     if (self = [super initWithStyle:style]) {
-        self.title = NSLocalizedString(@"Loading...", @"Master view navigation title");
+        self.title = NSLocalizedString(@"Twonk loading...", @"Master view navigation title");
 		self.dataController = nil;
 		
 		((UITableView*)self.view).rowHeight = kRowHeightDefault;

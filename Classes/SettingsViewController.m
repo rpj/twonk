@@ -25,6 +25,8 @@
 	NSString *uname = nil;
 	NSString *pass = nil;
 	
+	_mobileSwitch.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"mobileTwitter"];
+	
 	if ((uname = [[NSUserDefaults standardUserDefaults] stringForKey:@"username"]) &&
 		(pass = [[NSUserDefaults standardUserDefaults] stringForKey:@"password"])) {
 		_username.text = _enterUser = uname;
@@ -37,10 +39,15 @@
 
 - (void) viewWillDisappear:(BOOL)animated
 {
+	NSLog(@"%@ vs %@ -- %@ vs %@", _enterUser, _username.text, _enterPass, _password.text);
 	if ((!_enterUser && !_enterPass) || 
 		((_enterUser && ![_enterUser isEqualToString:_username.text]) ||
-		(_enterPass && ![_enterPass isEqualToString:_password.text])))
+		 (_enterPass && ![_enterPass isEqualToString:_password.text]))) {
+		NSLog(@"Posting notification...");
+		[[NSUserDefaults standardUserDefaults] setObject:_username.text forKey:@"username"];
+		[[NSUserDefaults standardUserDefaults] setObject:_password.text forKey:@"password"];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"UserAndPassSet" object:nil];
+	}
 	
 	[super viewWillDisappear:animated];
 }
@@ -90,14 +97,8 @@
 	return YES;
 }
 
-- (IBAction) usernameFieldChanged:(id)sender;
+- (IBAction) mobileSwitchToggle:(id)sender;
 {
-	[[NSUserDefaults standardUserDefaults] setObject:_username.text forKey:@"username"];
+	[[NSUserDefaults standardUserDefaults] setBool:_mobileSwitch.on forKey:@"mobileTwitter"];
 }
-
-- (IBAction) passwordFieldChanged:(id)sender;
-{
-	[[NSUserDefaults standardUserDefaults] setObject:_password.text forKey:@"password"];
-}
-
 @end

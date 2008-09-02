@@ -20,6 +20,7 @@
     
     UINavigationController *aNavigationController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
     self.navigationController = aNavigationController;
+	self.navigationController.navigationBar.barStyle = UIBarStyleBlackOpaque;
     [aNavigationController release];
     [rootViewController release];
     

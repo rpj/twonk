@@ -55,7 +55,6 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 	return 5;
-    //return 4;
 }
 
 
@@ -81,7 +80,9 @@
 				
 			case 4:
 				if (![cell.text isEqualToString:@"No Reply"]) {
-					url = [NSURL URLWithString:[NSString stringWithFormat:@"http://m.twitter.com/%@", [[cell.text componentsSeparatedByString:@"@"] objectAtIndex:1]]];
+					url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@twitter.com/%@",
+												([[NSUserDefaults standardUserDefaults] boolForKey:@"mobileTwitter"] ? @"m." : @""),
+												[[cell.text componentsSeparatedByString:@"@"] objectAtIndex:1]]];
 					NSLog(@"URL %@", url);
 				}
 				
@@ -106,7 +107,7 @@
 			
 			_webViewCtrlr.title = [url host];
 			[webView loadRequest:[NSURLRequest requestWithURL:url]];
-			[[self navigationController] pushViewController:_webViewCtrlr animated:YES];
+			[self.navigationController pushViewController:_webViewCtrlr animated:YES];
 		}
 	}
 }

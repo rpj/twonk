@@ -12,11 +12,11 @@
 @interface SettingsViewController : UIViewController <UITextFieldDelegate> {
 	IBOutlet UITextField *_username;
 	IBOutlet UITextField *_password;
+	IBOutlet UISwitch *_mobileSwitch;
 	
 	NSString *_enterUser;
 	NSString *_enterPass;
 }
 
-- (IBAction) usernameFieldChanged:(id)sender;
-- (IBAction) passwordFieldChanged:(id)sender;
+- (IBAction) mobileSwitchToggle:(id)sender;
 @end
