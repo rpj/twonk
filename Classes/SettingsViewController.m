@@ -39,11 +39,9 @@
 
 - (void) viewWillDisappear:(BOOL)animated
 {
-	NSLog(@"%@ vs %@ -- %@ vs %@", _enterUser, _username.text, _enterPass, _password.text);
 	if ((!_enterUser && !_enterPass) || 
 		((_enterUser && ![_enterUser isEqualToString:_username.text]) ||
 		 (_enterPass && ![_enterPass isEqualToString:_password.text]))) {
-		NSLog(@"Posting notification...");
 		[[NSUserDefaults standardUserDefaults] setObject:_username.text forKey:@"username"];
 		[[NSUserDefaults standardUserDefaults] setObject:_password.text forKey:@"password"];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"UserAndPassSet" object:nil];
@@ -52,17 +50,6 @@
 	[super viewWillDisappear:animated];
 }
 
-/*
- Implement loadView if you want to create a view hierarchy programmatically
-- (void)loadView {
-}
- */
-
-/*
- If you need to do additional setup after loading the view, override viewDidLoad.
-- (void)viewDidLoad {
-}
- */
 
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {

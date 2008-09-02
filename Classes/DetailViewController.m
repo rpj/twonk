@@ -5,11 +5,14 @@
 #import "RootViewController.h"
 
 
-@implementation DetailViewController
-
-@synthesize detailItem;
-
+@implementation WebViewController
 /////
+- (void)viewWillAppear:(BOOL)animated
+{
+	self.navigationItem.hidesBackButton = YES;
+	[super viewWillAppear:animated];
+}
+
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType;
 {
 	return YES;
@@ -21,6 +24,8 @@
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView;
 {
+	self.navigationItem.hidesBackButton = NO;
+	self.navigationItem.title = [[webView.request URL] host];
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 }
 
@@ -30,6 +35,11 @@
 }
 
 /////
+@end
+
+@implementation DetailViewController
+
+@synthesize detailItem;
 
 - (void) dealloc;
 {
@@ -95,17 +105,17 @@
 		if (url) {
 			UIWebView* webView = [[UIWebView alloc] initWithFrame:self.view.frame];
 			webView.scalesPageToFit = YES;
-			webView.delegate = self;
 			
 			if (_webViewCtrlr) {
 				[_webViewCtrlr.view release];
 				[_webViewCtrlr release];
 			}
 				
-			_webViewCtrlr = [[UIViewController alloc] init];
+			_webViewCtrlr = [[WebViewController alloc] init];
 			_webViewCtrlr.view = webView;
+			_webViewCtrlr.title = @"Loading..."; //[url host];
+			webView.delegate = _webViewCtrlr;
 			
-			_webViewCtrlr.title = [url host];
 			[webView loadRequest:[NSURLRequest requestWithURL:url]];
 			[self.navigationController pushViewController:_webViewCtrlr animated:YES];
 		}
