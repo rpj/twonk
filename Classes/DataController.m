@@ -28,6 +28,8 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 										  cancelButtonTitle:nil
 										  otherButtonTitles:@"Well, can't do much!", nil];
 	[aView show];
+	
+	NSLog(@"Twitter failure (reqID %@): \"%@\"", requestIdentifier, error);
 }
 
 - (void)statusesReceived:(NSArray *)statuses forRequest:(NSString *)identifier;
@@ -79,10 +81,13 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 		_lastUpdateID = -1;
 		
 		NSAutoreleasePool *tPool = [[NSAutoreleasePool alloc] init];
-		[_twitter release];
-		_twitter = [[MGTwitterEngine alloc] initWithDelegate:self];
+		
+		if (!_twitter)
+			_twitter = [[MGTwitterEngine alloc] initWithDelegate:self];
+		
 		[_twitter setUsername:uname password:pass];
 		self.lastReqID = [_twitter checkUserCredentials];
+		
 		[tPool release];
 	}
 }
@@ -100,19 +105,6 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 {
 	[self _reloadWithUsername:[[NSUserDefaults standardUserDefaults] stringForKey:@"username"]
 				 andPassword:[[NSUserDefaults standardUserDefaults] stringForKey:@"password"]];
-}
-
-
-- (id)init {
-    if (self = [super init]) {
-		NSString *uname = nil;
-		NSString *pass = nil;
-		
-		if ((uname = [[NSUserDefaults standardUserDefaults] stringForKey:@"username"]) &&
-			(pass = [[NSUserDefaults standardUserDefaults] stringForKey:@"password"]))
-			[self _reloadWithUsername:uname andPassword:pass];
-    }
-    return self;
 }
 
 // Custom set accessor to ensure the new list is mutable
@@ -133,17 +125,23 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 }
 
 
-- (void) memoryWarning;
-{
-	[list release];
-	list = [[NSMutableArray array] retain];
-}
-
 - (void)dealloc {
     [list release];
+	[_twitter endUserSession];
 	[_twitter release];
     [super dealloc];
 }
 
+
+
+- (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
+{
+	_validUser = NO;
+	_lastUpdateID = -1;
+	_lastReqID = nil;
+	
+	[list release];
+	list = [[NSMutableArray alloc] init];
+}
 
 @end

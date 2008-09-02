@@ -13,10 +13,12 @@
 	IBOutlet UITextField *_username;
 	IBOutlet UITextField *_password;
 	IBOutlet UISwitch *_mobileSwitch;
+	IBOutlet UISwitch *_blackSwitch;
 	
 	NSString *_enterUser;
 	NSString *_enterPass;
 }
 
 - (IBAction) mobileSwitchToggle:(id)sender;
+- (IBAction) blackSwitchToggle:(id)sender;
 @end

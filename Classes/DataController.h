@@ -9,7 +9,7 @@
 #define kDataControllerUpdatedData		@"kDataControllerUpdatedData"
 
 
-@interface DataController : NSObject <MGTwitterEngineDelegate> {
+@interface DataController : NSObject <MGTwitterEngineDelegate, UIApplicationDelegate> {
 	MGTwitterEngine* _twitter;
 	NSString* _lastReqID;
 	int _lastUpdateID;
@@ -24,6 +24,4 @@
 
 - (void) reloadWithStandardUserInfo;
 - (void) refreshFriendsTimeline;
-
-- (void) memoryWarning;
 @end

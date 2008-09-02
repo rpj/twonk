@@ -28,6 +28,13 @@
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 }
 
+- (void) _showSettings;
+{
+	SettingsViewController *settings = [[SettingsViewController alloc] initWithNibName:@"SettingsView" bundle:nil];
+	[[self navigationController] pushViewController:settings animated:YES];
+	[settings release];
+}
+
 
 - (void) _userAndPassSet:(NSNotification*)notify;
 {
@@ -35,22 +42,23 @@
 		// Create the data controller
 		DataController *controller = [[DataController alloc] init];
 		self.dataController = controller;
+		[UIApplication sharedApplication].delegate = controller;
 		[controller release];
 	}
 	
-	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-	self.title = NSLocalizedString(([NSString stringWithFormat:@"%@", [[NSUserDefaults standardUserDefaults] stringForKey:@"username"]]), 
-								   @"Master view navigation title");
-	[self.dataController reloadWithStandardUserInfo];
+	NSString* user = [[NSUserDefaults standardUserDefaults] stringForKey:@"username"];
+	NSString* pass = [[NSUserDefaults standardUserDefaults] stringForKey:@"password"];
+	
+	if (!user || [user isEqualToString:@""] || !pass || [pass isEqualToString:@""]) {
+		[self _showSettings];
+	}
+	else {
+		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+		self.title = NSLocalizedString(([NSString stringWithFormat:@"%@", user]), @"Master view navigation title");
+		[self.dataController reloadWithStandardUserInfo];
+	}
 }
 
-
-- (void) _showSettings;
-{
-	SettingsViewController *settings = [[SettingsViewController alloc] initWithNibName:@"SettingsView" bundle:nil];
-	[[self navigationController] pushViewController:settings animated:YES];
-	[settings release];
-}
 
 - (void) settingsButton:(id)sender;
 {
@@ -60,6 +68,8 @@
 - (void) _enableRefresh:(NSTimer*)timer;
 {
 	_refreshButton.enabled = YES;
+	[_lastRefresh release];
+	_lastRefresh = nil;
 }
 
 - (void) refreshButton:(id)sender;
@@ -110,14 +120,9 @@
 		[[self navigationItem] setLeftBarButtonItem:_refreshButton animated:YES];
 	}
 
+// gets the whole ball rolling: set #if 0 to produce the Default.png screenshot; that is all.
 #if 1
-	if (![[NSUserDefaults standardUserDefaults] stringForKey:@"username"] || 
-		![[NSUserDefaults standardUserDefaults] stringForKey:@"password"]) {
-		[self _showSettings];
-	}
-	else {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"UserAndPassSet" object:nil];
-	}
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"UserAndPassSet" object:nil];
 #endif
 }
 
@@ -170,10 +175,8 @@
 		
 		UITextView* tView = nil;
 		
-		//NSLog(@"cell[%@].contentView[%@].subviews: %@", cell, cell.contentView, cell.contentView.subviews);
 		if ([cell.contentView.subviews count] == 1) {
 			tView = (UITextView*)[cell.contentView.subviews objectAtIndex:0];
-			NSLog(@"Reusing %@ for cell %@, index path %@", tView, cell, indexPath);
 		}
 		else {
 			CGRect nFrame = CGRectMake(0, 0, cell.frame.size.width - 30, cell.frame.size.height);
@@ -219,8 +222,8 @@
 
 
 - (void)didReceiveMemoryWarning {
-	NSLog(@"%@ memory warning", [self class]);
-	//[dataController memoryWarning]; // doesn't work the way it should :/
+	[self _enableRefresh:nil];
+	[self.tableView reloadData];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
