@@ -129,9 +129,15 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 }
 
 - (id)objectInListAtIndex:(unsigned)theIndex {
-    return [list objectAtIndex:theIndex];
+    return (theIndex < [list count] ? [list objectAtIndex:theIndex] : nil);
 }
 
+
+- (void) memoryWarning;
+{
+	[list release];
+	list = [[NSMutableArray array] retain];
+}
 
 - (void)dealloc {
     [list release];

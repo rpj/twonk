@@ -24,4 +24,6 @@
 
 - (void) reloadWithStandardUserInfo;
 - (void) refreshFriendsTimeline;
+
+- (void) memoryWarning;
 @end

@@ -9,6 +9,9 @@
 #define kRowHeightDefault		90.0
 #define kDefaultTweetFontSize	13.0
 #define kDefaultRefreshInterval	30.0
+#define kBackgroundColor		[UIColor blackColor]
+
+//[UIColor colorWithRed:0.10 green:0.10 blue:0.15 alpha:1.0]
 
 
 @implementation RootViewController
@@ -19,7 +22,7 @@
 {
 	[self.tableView reloadData];
 	
-	self.title = NSLocalizedString(([NSString stringWithFormat:@"%@/friends", [[NSUserDefaults standardUserDefaults] stringForKey:@"username"]]), 
+	self.title = NSLocalizedString(([NSString stringWithFormat:@"%@ / friends", [[NSUserDefaults standardUserDefaults] stringForKey:@"username"]]), 
 								   @"Master view navigation title");
 	self.navigationItem.prompt = nil;
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
@@ -79,7 +82,12 @@
 		self.navigationItem.prompt = @"Loading...";
 		self.dataController = nil;
 		
-		((UITableView*)self.view).rowHeight = kRowHeightDefault;
+		UITableView *table = (UITableView*)self.view;
+		table.rowHeight = kRowHeightDefault;
+		table.separatorStyle = UITableViewCellSeparatorStyleNone;
+		table.separatorColor = [UIColor whiteColor];
+		table.backgroundColor = kBackgroundColor;
+		
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_dataUpdated:) name:kDataControllerUpdatedData object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_userAndPassSet:) name:@"UserAndPassSet" object:nil];
@@ -101,7 +109,8 @@
 																	   action:@selector(refreshButton:)];
 		[[self navigationItem] setLeftBarButtonItem:_refreshButton animated:YES];
 	}
-	
+
+#if 1
 	if (![[NSUserDefaults standardUserDefaults] stringForKey:@"username"] || 
 		![[NSUserDefaults standardUserDefaults] stringForKey:@"password"]) {
 		[self _showSettings];
@@ -109,6 +118,7 @@
 	else {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"UserAndPassSet" object:nil];
 	}
+#endif
 }
 
 - (void) viewDidAppear:(BOOL)anim;
@@ -150,8 +160,10 @@
 	
     if (cell == nil) {
         cell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:cellId] autorelease];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
 		cell.lineBreakMode = UILineBreakModeWordWrap;
+		cell.backgroundView = [[UIView alloc] initWithFrame:cell.bounds];
+		cell.backgroundView.backgroundColor = kBackgroundColor;
 		
 		UIView *label = [cell.contentView.subviews objectAtIndex:0];
 		if (label) [label removeFromSuperview];
@@ -164,14 +176,16 @@
 			NSLog(@"Reusing %@ for cell %@, index path %@", tView, cell, indexPath);
 		}
 		else {
-			CGRect nFrame = CGRectMake(0, 0, cell.frame.size.width - 25, cell.frame.size.height);
+			CGRect nFrame = CGRectMake(0, 0, cell.frame.size.width - 30, cell.frame.size.height);
 			tView = [[UITextView alloc] initWithFrame:nFrame];	
 			tView.scrollEnabled = NO;
 			tView.editable = NO;
 			tView.pagingEnabled = NO;
 			tView.bounces = NO;
 			tView.userInteractionEnabled = NO;
-			tView.font = [UIFont systemFontOfSize: kDefaultTweetFontSize];
+			tView.font = [UIFont boldSystemFontOfSize: kDefaultTweetFontSize];
+			tView.textColor = [UIColor whiteColor];
+			tView.backgroundColor = kBackgroundColor;
 			
 			[cell.contentView addSubview:tView];
 			[tView release];
@@ -206,6 +220,7 @@
 
 - (void)didReceiveMemoryWarning {
 	NSLog(@"%@ memory warning", [self class]);
+	//[dataController memoryWarning]; // doesn't work the way it should :/
 }
 
 - (void)dealloc {

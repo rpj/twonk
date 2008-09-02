@@ -125,7 +125,7 @@
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
-						<string key="IBUIText">Use m.twitter.com</string>
+						<string key="IBUIText">Use m.twitter.com:</string>
 						<reference key="IBUITextColor" ref="904590963"/>
 						<nil key="IBUIHighlightedColor"/>
 						<int key="IBUIBaselineAdjustment">1</int>
@@ -220,9 +220,9 @@
 							<reference ref="100152014"/>
 							<reference ref="867089019"/>
 							<reference ref="1055414707"/>
-							<reference ref="716656722"/>
 							<reference ref="757232308"/>
 							<reference ref="815889829"/>
+							<reference ref="716656722"/>
 						</object>
 						<reference key="parent" ref="360949347"/>
 					</object>

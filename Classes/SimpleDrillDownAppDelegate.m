@@ -14,6 +14,8 @@
 
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
+	
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackOpaque];
     
     // Create and configure the navigation and view controllers
     RootViewController *rootViewController = [[RootViewController alloc] initWithStyle:UITableViewStylePlain];
@@ -21,11 +23,10 @@
     UINavigationController *aNavigationController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
     self.navigationController = aNavigationController;
 	self.navigationController.navigationBar.barStyle = UIBarStyleBlackOpaque;
-    [aNavigationController release];
-    [rootViewController release];
-    
 	[rootViewController finishSetup];
 	
+    [aNavigationController release];
+    [rootViewController release];
     // Configure and show the window
     [window addSubview:[navigationController view]];
     [window makeKeyAndVisible];
