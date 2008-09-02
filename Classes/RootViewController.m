@@ -119,10 +119,13 @@
 																	   action:@selector(refreshButton:)];
 		[[self navigationItem] setLeftBarButtonItem:_refreshButton animated:YES];
 	}
-
-// gets the whole ball rolling: set #if 0 to produce the Default.png screenshot; that is all.
+	
+	// gets the whole ball rolling: set #if 0 to produce the Default.png screenshot; that is all.
 #if 1
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"UserAndPassSet" object:nil];
+#else
+	self.navigationItem.rightBarButtonItem.enabled = NO;
+	self.navigationItem.leftBarButtonItem.enabled = NO;
 #endif
 }
 

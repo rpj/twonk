@@ -28,10 +28,7 @@
 		942CF6DA0E5F4A700050FA3D /* MGTwitterXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 942CF6C20E5F4A700050FA3D /* MGTwitterXMLParser.m */; };
 		942CF6DB0E5F4A700050FA3D /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 942CF6C40E5F4A700050FA3D /* NSData+Base64.m */; };
 		942CF6DC0E5F4A700050FA3D /* NSString+UUID.m in Sources */ = {isa = PBXBuildFile; fileRef = 942CF6C60E5F4A700050FA3D /* NSString+UUID.m */; };
-		942CF6DD0E5F4A700050FA3D /* README.txt in Resources */ = {isa = PBXBuildFile; fileRef = 942CF6C70E5F4A700050FA3D /* README.txt */; };
 		942CF6DE0E5F4A700050FA3D /* Source Code License.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 942CF6C80E5F4A700050FA3D /* Source Code License.rtf */; };
-		942CF6DF0E5F4A700050FA3D /* TODO in Resources */ = {isa = PBXBuildFile; fileRef = 942CF6C90E5F4A700050FA3D /* TODO */; };
-		942CF8460E5F57FB0050FA3D /* TwitterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 942CF8450E5F57FB0050FA3D /* TwitterCell.m */; };
 		94E322840E6C77D100E8D07A /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 94E322830E6C77D100E8D07A /* SettingsViewController.m */; };
 		94E322860E6C77DD00E8D07A /* SettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 94E322850E6C77DD00E8D07A /* SettingsView.xib */; };
 /* End PBXBuildFile section */
@@ -265,9 +262,7 @@
 				28554E2C0DAC293600168C19 /* Icon.png in Resources */,
 				2846CFC80DBFDD18009410C2 /* Localizable.strings in Resources */,
 				28A0A2200DCBAA090060EDFB /* Default.png in Resources */,
-				942CF6DD0E5F4A700050FA3D /* README.txt in Resources */,
 				942CF6DE0E5F4A700050FA3D /* Source Code License.rtf in Resources */,
-				942CF6DF0E5F4A700050FA3D /* TODO in Resources */,
 				94E322860E6C77DD00E8D07A /* SettingsView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -293,7 +288,6 @@
 				942CF6DA0E5F4A700050FA3D /* MGTwitterXMLParser.m in Sources */,
 				942CF6DB0E5F4A700050FA3D /* NSData+Base64.m in Sources */,
 				942CF6DC0E5F4A700050FA3D /* NSString+UUID.m in Sources */,
-				942CF8460E5F57FB0050FA3D /* TwitterCell.m in Sources */,
 				94E322840E6C77D100E8D07A /* SettingsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
