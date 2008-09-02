@@ -33,7 +33,7 @@
 		_password.text = _enterPass = pass;
 	}
 	
-	[self navigationItem].title = @"User Setup";
+	self.navigationItem.title = @"User Setup";
 	[super viewWillAppear:animated];
 }
 

@@ -7,6 +7,8 @@
 
 
 @interface WebViewController : UIViewController <UIWebViewDelegate> {
+	NSURL *_url;
+	BOOL _refreshUp;
 }
 
 @end

@@ -7,14 +7,63 @@
 
 @implementation WebViewController
 /////
+- (void) _setupStopRefreshChain;
+{
+	UIBarButtonItem *bbutton = self.navigationItem.rightBarButtonItem;
+	[self.navigationItem setRightBarButtonItem: [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop 
+																							  target:self 
+																							  action:@selector(_stopButton)] animated: YES];
+	_refreshUp = NO;
+	[bbutton release];
+	
+	self.navigationItem.hidesBackButton = YES;
+	self.navigationItem.prompt = @"Loading...";
+}
+
+- (void) _refresh;
+{	
+	[self _setupStopRefreshChain];
+	if (_url) [(UIWebView*)self.view loadRequest:[NSURLRequest requestWithURL:_url]];
+}
+
+- (void) _addStopButton;
+{
+	UIBarButtonItem *bbutton = self.navigationItem.rightBarButtonItem;
+	[self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh 
+																							 target:self
+																							 action:@selector(_refresh)] animated:YES];
+	_refreshUp = YES;
+	[bbutton release];
+}
+- (void) _stopButton;
+{
+	UIWebView *twv = (UIWebView*)self.view;		// to kill warnings
+	[twv stopLoading];
+	[self webViewDidFinishLoad:twv];
+	
+	[self _addStopButton];
+}
+/*
 - (void)viewWillAppear:(BOOL)animated
 {
-	self.navigationItem.hidesBackButton = YES;
 	[super viewWillAppear:animated];
+}*/
+
+- (void)viewWillDisappear:(BOOL)animated;
+{
+	[_url release];
+	_url = nil;
+	[super viewWillDisappear:animated];
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType;
 {
+	static BOOL hasHitFirst = NO;
+	if (!hasHitFirst) {
+		[self _setupStopRefreshChain];
+		hasHitFirst = YES;
+	}
+	if (!_url) _url = [[request URL] copy];
 	return YES;
 }
 
@@ -25,8 +74,10 @@
 - (void)webViewDidFinishLoad:(UIWebView *)webView;
 {
 	self.navigationItem.hidesBackButton = NO;
-	self.navigationItem.title = [[webView.request URL] host];
+	self.navigationItem.prompt = nil;
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+	
+	if (!_refreshUp) [self _addStopButton];
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error;
@@ -113,7 +164,7 @@
 				
 			_webViewCtrlr = [[WebViewController alloc] init];
 			_webViewCtrlr.view = webView;
-			_webViewCtrlr.title = @"Loading..."; //[url host];
+			_webViewCtrlr.title = [url host];
 			webView.delegate = _webViewCtrlr;
 			
 			[webView loadRequest:[NSURLRequest requestWithURL:url]];

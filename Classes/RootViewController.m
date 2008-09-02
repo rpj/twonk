@@ -19,12 +19,10 @@
 {
 	[self.tableView reloadData];
 	
-	self.title = NSLocalizedString(([NSString stringWithFormat:@"%@'s Friends", [[NSUserDefaults standardUserDefaults] stringForKey:@"username"]]), 
+	self.title = NSLocalizedString(([NSString stringWithFormat:@"%@/friends", [[NSUserDefaults standardUserDefaults] stringForKey:@"username"]]), 
 								   @"Master view navigation title");
+	self.navigationItem.prompt = nil;
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-	
-	if (!_refreshButton.enabled)
-		_refreshButton.enabled = YES;
 }
 
 
@@ -38,7 +36,7 @@
 	}
 	
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-	self.title = NSLocalizedString(([NSString stringWithFormat:@"Loading %@", [[NSUserDefaults standardUserDefaults] stringForKey:@"username"]]), 
+	self.title = NSLocalizedString(([NSString stringWithFormat:@"%@", [[NSUserDefaults standardUserDefaults] stringForKey:@"username"]]), 
 								   @"Master view navigation title");
 	[self.dataController reloadWithStandardUserInfo];
 }
@@ -56,22 +54,29 @@
 	[self _showSettings];
 }
 
+- (void) _enableRefresh:(NSTimer*)timer;
+{
+	_refreshButton.enabled = YES;
+}
+
 - (void) refreshButton:(id)sender;
 {
 	if (!_lastRefresh || [_lastRefresh timeIntervalSinceNow] < -kDefaultRefreshInterval) {
 		[_lastRefresh release];
 		_lastRefresh = [[NSDate date] retain];
 		_refreshButton.enabled = NO;
-		self.navigationItem.title = @"Refreshing...";
+		self.navigationItem.prompt = @"Refreshing...";
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 		[self.dataController refreshFriendsTimeline];
+		[NSTimer scheduledTimerWithTimeInterval:kDefaultRefreshInterval target:self selector:@selector(_enableRefresh:) userInfo:nil repeats:NO];
 	}
 }
 
 
 - (id)initWithStyle:(UITableViewStyle)style {
     if (self = [super initWithStyle:style]) {
-        self.title = NSLocalizedString(@"Twonk loading...", @"Master view navigation title");
+        self.title = NSLocalizedString(@"Twonk", @"Master view navigation title");
+		self.navigationItem.prompt = @"Loading...";
 		self.dataController = nil;
 		
 		((UITableView*)self.view).rowHeight = kRowHeightDefault;
