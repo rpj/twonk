@@ -7,6 +7,11 @@
 
 @implementation WebViewController
 /////
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	// Return YES for supported orientations
+	return YES; //(interfaceOrientation == UIInterfaceOrientationPortrait);
+}
+
 - (void) _setupStopRefreshChain;
 {
 	UIBarButtonItem *bbutton = self.navigationItem.rightBarButtonItem;
@@ -278,5 +283,10 @@
     return title;
 }
 
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	// Return YES for supported orientations
+	return YES; //(interfaceOrientation == UIInterfaceOrientationPortrait);
+}
 
 @end

@@ -223,6 +223,11 @@
 	//[dataController memoryWarning]; // doesn't work the way it should :/
 }
 
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	// Return YES for supported orientations
+	return YES; //(interfaceOrientation == UIInterfaceOrientationPortrait);
+}
+
 - (void)dealloc {
     [dataController release];
 	[_refreshButton release];
