@@ -1,48 +1,4 @@
 /*
-
-File: DetailViewController.m
-Abstract: Creates a grouped table view to act as an inspector.
-
-Version: 2.5
-
-Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple Inc.
-("Apple") in consideration of your agreement to the following terms, and your
-use, installation, modification or redistribution of this Apple software
-constitutes acceptance of these terms.  If you do not agree with these terms,
-please do not use, install, modify or redistribute this Apple software.
-
-In consideration of your agreement to abide by the following terms, and subject
-to these terms, Apple grants you a personal, non-exclusive license, under
-Apple's copyrights in this original Apple software (the "Apple Software"), to
-use, reproduce, modify and redistribute the Apple Software, with or without
-modifications, in source and/or binary forms; provided that if you redistribute
-the Apple Software in its entirety and without modifications, you must retain
-this notice and the following text and disclaimers in all such redistributions
-of the Apple Software.
-Neither the name, trademarks, service marks or logos of Apple Inc. may be used
-to endorse or promote products derived from the Apple Software without specific
-prior written permission from Apple.  Except as expressly stated in this notice,
-no other rights or licenses, express or implied, are granted by Apple herein,
-including but not limited to any patent rights that may be infringed by your
-derivative works or by other works in which the Apple Software may be
-incorporated.
-
-The Apple Software is provided by Apple on an "AS IS" basis.  APPLE MAKES NO
-WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED
-WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND OPERATION ALONE OR IN
-COMBINATION WITH YOUR PRODUCTS.
-
-IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
-GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-ARISING IN ANY WAY OUT OF THE USE, REPRODUCTION, MODIFICATION AND/OR
-DISTRIBUTION OF THE APPLE SOFTWARE, HOWEVER CAUSED AND WHETHER UNDER THEORY OF
-CONTRACT, TORT (INCLUDING NEGLIGENCE), STRICT LIABILITY OR OTHERWISE, EVEN IF
-APPLE HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-Copyright (C) 2008 Apple Inc. All Rights Reserved.
-
 */
 
 #import "DetailViewController.h"
@@ -61,7 +17,6 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 
 - (void)webViewDidStartLoad:(UIWebView *)webView;
 {
-	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView;
@@ -99,7 +54,7 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 // Standard table view data source and delegate methods
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return 3;
+	return 5;
     //return 4;
 }
 
@@ -109,20 +64,46 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 	return 1;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (indexPath.section == 2) {		
-		UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {		
+	UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
+	
+	if (cell) {
+		NSURL *url = nil;
 		
-		if (cell && ![cell.text isEqualToString:@"No URL given"]) {
-			
+		switch (indexPath.section) {
+			case 2:
+			case 3:
+				if (![cell.text isEqualToString:@"No URL"]) {
+					url = [NSURL URLWithString:cell.text];
+				}
+				
+				break;
+				
+			case 4:
+				if (![cell.text isEqualToString:@"No Reply"]) {
+					url = [NSURL URLWithString:[NSString stringWithFormat:@"http://m.twitter.com/%@", [[cell.text componentsSeparatedByString:@"@"] objectAtIndex:1]]];
+					NSLog(@"URL %@", url);
+				}
+				
+				break;
+				
+			default:
+				break;
+		}
+		
+		if (url) {
 			UIWebView* webView = [[UIWebView alloc] initWithFrame:self.view.frame];
 			webView.scalesPageToFit = YES;
 			webView.delegate = self;
 			
+			if (_webViewCtrlr) {
+				[_webViewCtrlr.view release];
+				[_webViewCtrlr release];
+			}
+				
 			_webViewCtrlr = [[UIViewController alloc] init];
 			_webViewCtrlr.view = webView;
 			
-			NSURL *url = [NSURL URLWithString:cell.text];
 			_webViewCtrlr.title = [url host];
 			[webView loadRequest:[NSURLRequest requestWithURL:url]];
 			[[self navigationController] pushViewController:_webViewCtrlr animated:YES];
@@ -151,25 +132,54 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
     // Set the text in the cell for the section/row
     
     NSString *cellText = nil;
-    
+    NSRange range;
+	
     switch (indexPath.section) {
         case 0:
             cellText = [(NSDictionary*)[detailItem objectForKey:@"user"] objectForKey:@"name"];
 			if ([cellText isEqualToString:@""]) cellText = [(NSDictionary*)[detailItem objectForKey:@"user"] objectForKey:@"screen_name"];
             break;
+			
         case 1:
             cellText = [(NSDictionary*)[detailItem objectForKey:@"user"] objectForKey:@"location"];
 			if ([cellText isEqualToString:@""]) cellText = @"Unknown location";
             break;
+			
         case 2:
             cellText = [(NSDictionary*)[detailItem objectForKey:@"user"] objectForKey:@"url"];
 			cell.font = [UIFont boldSystemFontOfSize:14.0];
-			if ([cellText isEqualToString:@""]) { cellText = @"No URL given"; }
+			if ([cellText isEqualToString:@""]) { cellText = @"No URL"; }
 			else { cell.selectionStyle = UITableViewCellSelectionStyleBlue; }
             break;
+			
 		case 3:		// currently usused
 			cellText = [detailItem objectForKey:@"text"];
+			range = [cellText rangeOfString:@"http://"];
+			
+			if (range.location != NSNotFound) {
+				cellText = [cellText substringWithRange:NSMakeRange(range.location, [cellText length] - range.location)];
+				cellText = [[cellText componentsSeparatedByString:@" "] objectAtIndex:0];
+			}
+			else {
+				cellText = @"No URL";
+			}
+			
 			break;
+			
+		case 4:		// currently usused
+			cellText = [detailItem objectForKey:@"text"];
+			range = [cellText rangeOfString:@"@"];
+			
+			if (range.location != NSNotFound) {
+				cellText = [cellText substringWithRange:NSMakeRange(range.location, [cellText length] - range.location)];
+				cellText = [[cellText componentsSeparatedByString:@" "] objectAtIndex:0];
+			}
+			else {
+				cellText = @"No Reply";
+			}
+			
+			break;
+			
         default:
             break;
     }
@@ -193,7 +203,13 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
             title = NSLocalizedString(@"URL", @"URL section title");
             break;
 		case 3:		// currently unused
-			title = NSLocalizedString(@"Last Update", @"Last Update section title");
+			title = NSLocalizedString(@"Linked-To", @"Last Update section title");
+			break;
+			
+		case 4:
+			title = NSLocalizedString(@"Replied-To", @"");
+			break;
+			
         default:
             break;
     }

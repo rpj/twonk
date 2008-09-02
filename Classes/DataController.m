@@ -4,7 +4,7 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 
 #import "DataController.h"
 
-#define TWEET_NUM	100
+#define TWEET_NUM	50
 
 @implementation DataController
 
@@ -36,8 +36,8 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 	
 	if ([identifier isEqualToString:_lastReqID] && [statuses count]) {
 		if (_lastUpdateID == -1) {
-			_lastUpdateID = [(NSNumber*)[(NSDictionary*)[statuses objectAtIndex:0] objectForKey:@"id"] intValue];
-			[list insertObjects:statuses atIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [statuses count])]];
+			[list release];
+			list = [[NSMutableArray arrayWithArray:statuses] retain];
 		}
 		else {
 			NSMutableArray *newList = [NSMutableArray arrayWithArray:statuses];
@@ -45,6 +45,8 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 			[list release];
 			list = [newList retain];
 		}
+		
+		_lastUpdateID = [(NSNumber*)[(NSDictionary*)[statuses objectAtIndex:0] objectForKey:@"id"] intValue];
 	}
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:kDataControllerUpdatedData object:self userInfo:nil];
@@ -75,9 +77,6 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 	if (uname && pass) {
 		_validUser = NO;
 		_lastUpdateID = -1;
-		
-		[list release];
-		list = [[NSMutableArray alloc] initWithCapacity:TWEET_NUM];
 		
 		NSAutoreleasePool *tPool = [[NSAutoreleasePool alloc] init];
 		[_twitter release];
@@ -110,9 +109,8 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 		NSString *pass = nil;
 		
 		if ((uname = [[NSUserDefaults standardUserDefaults] stringForKey:@"username"]) &&
-			(pass = [[NSUserDefaults standardUserDefaults] stringForKey:@"password"])) {
+			(pass = [[NSUserDefaults standardUserDefaults] stringForKey:@"password"]))
 			[self _reloadWithUsername:uname andPassword:pass];
-		}
     }
     return self;
 }

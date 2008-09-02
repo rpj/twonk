@@ -7,6 +7,8 @@
 #import "SettingsViewController.h"
 
 #define kRowHeightDefault		100.0
+#define kDefaultTweetFontSize	13.0
+#define kDefaultRefreshInterval	30.0
 
 
 @implementation RootViewController
@@ -54,7 +56,7 @@
 
 - (void) refreshButton:(id)sender;
 {
-	if (!_lastRefresh || [_lastRefresh timeIntervalSinceNow] < -10.0) {
+	if (!_lastRefresh || [_lastRefresh timeIntervalSinceNow] < -kDefaultRefreshInterval) {
 		[_lastRefresh release];
 		_lastRefresh = [[NSDate date] retain];
 		_refreshButton.enabled = NO;
@@ -162,7 +164,7 @@
 			tView.pagingEnabled = NO;
 			tView.bounces = NO;
 			tView.userInteractionEnabled = NO;
-			tView.font = [UIFont systemFontOfSize: 12.0];
+			tView.font = [UIFont systemFontOfSize: kDefaultTweetFontSize];
 			
 			[cell.contentView addSubview:tView];
 			[tView release];
@@ -197,8 +199,6 @@
 
 - (void)didReceiveMemoryWarning {
 	NSLog(@"%@ memory warning", [self class]);
-	[super didReceiveMemoryWarning]; // Releases the view if it doesn't have a superview
-	// Release anything that's not essential, such as cached data
 }
 
 - (void)dealloc {
