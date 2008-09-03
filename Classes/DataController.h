@@ -15,6 +15,7 @@
 	NSString* _lastReqID;
 	int _lastUpdateID;
 	BOOL _validUser;
+	NSMutableDictionary *_imgTrack;
     NSMutableArray *list;
 }
 
@@ -25,4 +26,6 @@
 
 - (void) reloadWithStandardUserInfo;
 - (void) refreshFriendsTimeline;
+
+- (void) addImageToCell:(UITableViewCell*)cell fromURL:(NSString*)url;
 @end

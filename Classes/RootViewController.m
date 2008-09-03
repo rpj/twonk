@@ -8,7 +8,7 @@
 #import "TwitterCell.h"
 
 #define kRowHeightDefault		90.0
-#define kDefaultTweetFontSize	13.0
+#define kDefaultTweetFontSize	12.0
 #define kDefaultRefreshInterval	30.0
 #define kBackgroundColor		[UIColor blackColor]
 
@@ -233,10 +233,12 @@
 	
     if (cell == nil) {
         cell = [[[TwitterCell alloc] initWithFrame:CGRectZero reuseIdentifier:cellId] autorelease];
-        cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
+        cell.accessoryType = UITableViewCellAccessoryNone; //UITableViewCellAccessoryDetailDisclosureButton;
 		cell.lineBreakMode = UILineBreakModeWordWrap;
 		cell.backgroundView = [[UIView alloc] initWithFrame:cell.bounds];
 		cell.backgroundView.backgroundColor = kBackgroundColor;
+		
+		[dataController addImageToCell:cell fromURL:[[itemAtIndex objectForKey:@"user"] objectForKey:@"profile_image_url"]];
 		
 		UIView *label = [cell.contentView.subviews objectAtIndex:0];
 		if (label) [label removeFromSuperview];
@@ -247,7 +249,7 @@
 			tView = (UITextView*)[cell.contentView.subviews objectAtIndex:0];
 		}
 		else {
-			CGRect nFrame = CGRectMake(0, 0, cell.frame.size.width - 30, cell.frame.size.height);
+			CGRect nFrame = CGRectMake(60, 10, cell.frame.size.width - 55, cell.frame.size.height - 10);
 			tView = [[UITextView alloc] initWithFrame:nFrame];	
 			tView.scrollEnabled = NO;
 			tView.editable = NO;
@@ -264,15 +266,15 @@
 		
 		// Get the object to display and set the value in the cell
 		NSDictionary *itemAtIndex = (NSDictionary *)[dataController objectInListAtIndex:indexPath.row];
-		NSString* text = [NSString stringWithFormat:@"(%@) %@", [(NSDictionary*)[itemAtIndex objectForKey:@"user"] objectForKey:@"screen_name"], [itemAtIndex objectForKey:@"text"]];
-		tView.text = text;
+		tView.text = [NSString stringWithFormat:@"(%@) %@", [(NSDictionary*)[itemAtIndex objectForKey:@"user"] objectForKey:@"screen_name"], [itemAtIndex objectForKey:@"text"]];
 		
 		// seems that if we adjust the text view's frame size here (after knowing how high the content size will be),
 		// we don't get truncated text any longer.
 		// however, I believe this is Doing It Wrong, because there are strange table view drawing problems when you
 		// scroll now... oh well, at least it's getting closer.
 		tView.frame = CGRectMake(tView.frame.origin.x, tView.frame.origin.y, tView.contentSize.width, tView.contentSize.height);
-		[tView setNeedsDisplay];
+		//[cell setNeedsLayout];
+		//[tView setNeedsDisplay];
 	}
 	
     return cell;

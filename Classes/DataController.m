@@ -4,7 +4,7 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 
 #import "DataController.h"
 
-#define TWEET_NUM	10
+#define TWEET_NUM	50
 
 @implementation DataController
 
@@ -70,9 +70,31 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 
 - (void)imageReceived:(UIImage *)image forRequest:(NSString *)identifier;
 {
+	NSArray *arr = [_imgTrack objectForKey:identifier];
+	
+	if (arr && [arr count] == 2) {
+		UITableViewCell *cell = [arr objectAtIndex:0];
+		NSString *url = [arr objectAtIndex:1];
+		
+		if (cell && url) {
+			cell.image = image;
+			[cell setNeedsLayout];
+			[cell setNeedsDisplay];
+			
+			[_imgTrack removeObjectForKey:identifier];
+			[_imgTrack setObject:image forKey:url];
+		}
+	}
 }
 
-
+- (id) init;
+{
+	if ((self = [super init])) {
+		_imgTrack = [[NSMutableDictionary alloc] init];
+	}
+	
+	return self;
+}
 
 - (void) _reloadWithUsername:(NSString*)uname andPassword:(NSString*)pass;
 {
@@ -108,6 +130,22 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 				 andPassword:[[NSUserDefaults standardUserDefaults] stringForKey:@"password"]];
 }
 
+
+- (void) addImageToCell:(UITableViewCell*)cell fromURL:(NSString*)url;
+{
+	if (cell && url) {
+		UIImage *cacheImg = [_imgTrack objectForKey:url];
+		
+		if (cacheImg) {
+			cell.image = cacheImg;
+		}
+		else {
+			NSString *req = [_twitter getImageAtURL:url];
+			if (req) [_imgTrack setObject:[NSArray arrayWithObjects:cell, url, nil] forKey:req];
+		}
+	}
+}
+
 // Custom set accessor to ensure the new list is mutable
 - (void)setList:(NSMutableArray *)newList {
     if (list != newList) {
@@ -130,6 +168,7 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
     [list release];
 	[_twitter endUserSession];
 	[_twitter release];
+	[_imgTrack release];
     [super dealloc];
 }
 
