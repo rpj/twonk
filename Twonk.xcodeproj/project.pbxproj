@@ -29,6 +29,9 @@
 		942CF6DB0E5F4A700050FA3D /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 942CF6C40E5F4A700050FA3D /* NSData+Base64.m */; };
 		942CF6DC0E5F4A700050FA3D /* NSString+UUID.m in Sources */ = {isa = PBXBuildFile; fileRef = 942CF6C60E5F4A700050FA3D /* NSString+UUID.m */; };
 		942CF6DE0E5F4A700050FA3D /* Source Code License.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 942CF6C80E5F4A700050FA3D /* Source Code License.rtf */; };
+		94AE95EE0E6E6E51000C2B5E /* TwitterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 942CF8450E5F57FB0050FA3D /* TwitterCell.m */; };
+		94AE96020E6E7069000C2B5E /* star_select.png in Resources */ = {isa = PBXBuildFile; fileRef = 94AE96000E6E7068000C2B5E /* star_select.png */; };
+		94AE961E0E6E7108000C2B5E /* star_unselect.png in Resources */ = {isa = PBXBuildFile; fileRef = 94AE961D0E6E7108000C2B5E /* star_unselect.png */; };
 		94E322840E6C77D100E8D07A /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 94E322830E6C77D100E8D07A /* SettingsViewController.m */; };
 		94E322860E6C77DD00E8D07A /* SettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 94E322850E6C77DD00E8D07A /* SettingsView.xib */; };
 /* End PBXBuildFile section */
@@ -83,6 +86,8 @@
 		942CF8450E5F57FB0050FA3D /* TwitterCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TwitterCell.m; sourceTree = "<group>"; };
 		942CF8470E5F580E0050FA3D /* TwitterMessageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwitterMessageView.h; sourceTree = "<group>"; };
 		942CF8480E5F580E0050FA3D /* TwitterMessageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TwitterMessageView.m; sourceTree = "<group>"; };
+		94AE96000E6E7068000C2B5E /* star_select.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = star_select.png; sourceTree = "<group>"; };
+		94AE961D0E6E7108000C2B5E /* star_unselect.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = star_unselect.png; sourceTree = "<group>"; };
 		94E322820E6C77D100E8D07A /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		94E322830E6C77D100E8D07A /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		94E322850E6C77DD00E8D07A /* SettingsView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SettingsView.xib; sourceTree = "<group>"; };
@@ -156,6 +161,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				94AE961D0E6E7108000C2B5E /* star_unselect.png */,
+				94AE96000E6E7068000C2B5E /* star_select.png */,
 				28874A290D9DB87600CC0247 /* MainWindow.xib */,
 				94E322850E6C77DD00E8D07A /* SettingsView.xib */,
 				28A0A21F0DCBAA090060EDFB /* Default.png */,
@@ -264,6 +271,8 @@
 				28A0A2200DCBAA090060EDFB /* Default.png in Resources */,
 				942CF6DE0E5F4A700050FA3D /* Source Code License.rtf in Resources */,
 				94E322860E6C77DD00E8D07A /* SettingsView.xib in Resources */,
+				94AE96020E6E7069000C2B5E /* star_select.png in Resources */,
+				94AE961E0E6E7108000C2B5E /* star_unselect.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -289,6 +298,7 @@
 				942CF6DB0E5F4A700050FA3D /* NSData+Base64.m in Sources */,
 				942CF6DC0E5F4A700050FA3D /* NSString+UUID.m in Sources */,
 				94E322840E6C77D100E8D07A /* SettingsViewController.m in Sources */,
+				94AE95EE0E6E6E51000C2B5E /* TwitterCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

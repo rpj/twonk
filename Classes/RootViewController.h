@@ -10,6 +10,9 @@
 	
 	UIBarButtonItem *_refreshButton;
 	NSDate *_lastRefresh;
+	
+	UIImage *_starSelect;
+	UIImage *_starUnselect;
 }
 
 @property (nonatomic, retain) DataController *dataController;

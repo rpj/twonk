@@ -6,7 +6,8 @@
 #import "MGTwitterEngine.h"
 
 
-#define kDataControllerUpdatedData		@"kDataControllerUpdatedData"
+#define kDataControllerUpdatedData		@"DataControllerUpdatedData"
+#define kDataControllerTwitterError		@"DataControllerTwitterError"
 
 
 @interface DataController : NSObject <MGTwitterEngineDelegate, UIApplicationDelegate> {

@@ -5,6 +5,7 @@
 #import "DataController.h"
 #import "DetailViewController.h"
 #import "SettingsViewController.h"
+#import "TwitterCell.h"
 
 #define kRowHeightDefault		90.0
 #define kDefaultTweetFontSize	13.0
@@ -18,11 +19,65 @@
 
 @synthesize dataController;
 
+- (void) _clearPrompt:(NSTimer*)timer;
+{
+	self.navigationItem.prompt = nil;
+}
+
+- (void) _errorPosted:(NSNotification*)notify;
+{
+	NSError *error = [[notify userInfo] objectForKey:@"NSError"];
+	
+	if (error) {
+		NSString *str = nil;
+		BOOL needsAlert = NO;
+		
+		switch ([error code]) {
+			case 400:
+				str = @"Rate limit exceeded.";
+				break;
+				
+			case 401:
+				str = @"Bad username and/or password.";
+				break;
+				
+			case 500:
+			case 502:
+			case 503:
+				str = [NSString stringWithFormat:@"Twitter is technically... gone. Try again soon. (%@)", [error localizedDescription]];
+				needsAlert = YES;
+				break;
+				
+			default:
+				str = [error localizedDescription];
+				needsAlert = YES;
+				break;
+		}
+		
+		if (str) {
+			if (needsAlert) {	
+				UIAlertView *aView = [[UIAlertView alloc] initWithTitle:@"Twitter Request Failed" 
+																			  message:str
+																			 delegate:nil
+																	cancelButtonTitle:nil
+																	otherButtonTitles:@"Continue", nil];
+				[aView show];
+			}
+			else {
+				self.navigationItem.prompt = str;
+				[NSTimer scheduledTimerWithTimeInterval:kDefaultRefreshInterval/2 target:self selector:@selector(_clearPrompt:) userInfo:nil repeats:NO];
+			}
+		}
+		
+		NSLog(@"Twitter failure (reqID %@): \"%@\"", [[notify userInfo] objectForKey:@"requestID"], error);
+	}
+}
+
 - (void) _dataUpdated:(NSNotification*)notify;
 {
 	[self.tableView reloadData];
 	
-	self.title = NSLocalizedString(([NSString stringWithFormat:@"%@ / friends", [[NSUserDefaults standardUserDefaults] stringForKey:@"username"]]), 
+	self.title = NSLocalizedString(([NSString stringWithFormat:@"%@", [[NSUserDefaults standardUserDefaults] stringForKey:@"username"]]), 
 								   @"Master view navigation title");
 	self.navigationItem.prompt = nil;
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
@@ -99,7 +154,12 @@
 		table.backgroundColor = kBackgroundColor;
 		
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+		
+		_starSelect = [[UIImage imageNamed:@"star_select.png"] retain];
+		_starUnselect = [[UIImage imageNamed:@"star_unselect.png"] retain];
+		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_dataUpdated:) name:kDataControllerUpdatedData object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_errorPosted:) name:kDataControllerTwitterError object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_userAndPassSet:) name:@"UserAndPassSet" object:nil];
     }
 	
@@ -159,6 +219,11 @@
 	return kRowHeightDefault;
 }
 
+- (void) _starTouched;
+{
+	NSLog(@"_starTouched");
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	NSDictionary *itemAtIndex = (NSDictionary*)[dataController objectInListAtIndex:indexPath.row];
 	NSString *idStr = [itemAtIndex objectForKey:@"id"];
@@ -167,7 +232,7 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
 	
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:cellId] autorelease];
+        cell = [[[TwitterCell alloc] initWithFrame:CGRectZero reuseIdentifier:cellId] autorelease];
         cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
 		cell.lineBreakMode = UILineBreakModeWordWrap;
 		cell.backgroundView = [[UIView alloc] initWithFrame:cell.bounds];

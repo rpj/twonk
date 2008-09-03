@@ -4,7 +4,7 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 
 #import "DataController.h"
 
-#define TWEET_NUM	50
+#define TWEET_NUM	10
 
 @implementation DataController
 
@@ -15,21 +15,21 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 	if ([requestIdentifier isEqualToString:_lastReqID]) {
 		if (!_validUser) {
 			_validUser = YES;
+			NSLog(@"last is %@", self.lastReqID);
 			self.lastReqID = [_twitter getFollowedTimelineFor:nil since:nil startingAtPage:0 count:TWEET_NUM];
+			NSLog(@"friend fetch -> %@", self.lastReqID);
 		}
 	}
 }
 
 - (void)requestFailed:(NSString *)requestIdentifier withError:(NSError *)error;
 {
-	UIAlertView *aView = [[UIAlertView alloc] initWithTitle:@"Twitter Request Failed" 
-													message:[[error localizedDescription] copy]
-												   delegate:nil
-										  cancelButtonTitle:nil
-										  otherButtonTitles:@"Well, can't do much!", nil];
-	[aView show];
+	[[NSNotificationCenter defaultCenter] postNotificationName:kDataControllerUpdatedData object:self userInfo:nil];
 	
-	NSLog(@"Twitter failure (reqID %@): \"%@\"", requestIdentifier, error);
+	[[NSNotificationCenter defaultCenter] postNotificationName:kDataControllerTwitterError 
+														object:self 
+													  userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+																requestIdentifier, @"requestID", error, @"NSError", nil]];
 }
 
 - (void)statusesReceived:(NSArray *)statuses forRequest:(NSString *)identifier;
@@ -87,6 +87,7 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 		
 		[_twitter setUsername:uname password:pass];
 		self.lastReqID = [_twitter checkUserCredentials];
+		NSLog(@"Check cred for %@/%@ -> %@", uname, pass, self.lastReqID);
 		
 		[tPool release];
 	}
