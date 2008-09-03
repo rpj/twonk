@@ -77,7 +77,8 @@
 {
 	[self.tableView reloadData];
 	
-	self.title = NSLocalizedString(([NSString stringWithFormat:@"%@", [[NSUserDefaults standardUserDefaults] stringForKey:@"username"]]), 
+	self.title = NSLocalizedString(([NSString stringWithFormat:@"%@ (%d)", 
+									 [[NSUserDefaults standardUserDefaults] stringForKey:@"username"], dataController.requestsRemaining]), 
 								   @"Master view navigation title");
 	self.navigationItem.prompt = nil;
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
@@ -219,11 +220,6 @@
 	return kRowHeightDefault;
 }
 
-- (void) _starTouched;
-{
-	NSLog(@"_starTouched");
-}
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	NSDictionary *itemAtIndex = (NSDictionary*)[dataController objectInListAtIndex:indexPath.row];
 	NSString *idStr = [itemAtIndex objectForKey:@"id"];
@@ -237,8 +233,6 @@
 		cell.lineBreakMode = UILineBreakModeWordWrap;
 		cell.backgroundView = [[UIView alloc] initWithFrame:cell.bounds];
 		cell.backgroundView.backgroundColor = kBackgroundColor;
-		
-		[dataController addImageToCell:cell fromURL:[[itemAtIndex objectForKey:@"user"] objectForKey:@"profile_image_url"]];
 		
 		UIView *label = [cell.contentView.subviews objectAtIndex:0];
 		if (label) [label removeFromSuperview];
@@ -273,9 +267,14 @@
 		// however, I believe this is Doing It Wrong, because there are strange table view drawing problems when you
 		// scroll now... oh well, at least it's getting closer.
 		tView.frame = CGRectMake(tView.frame.origin.x, tView.frame.origin.y, tView.contentSize.width, tView.contentSize.height);
+		
+		[dataController addImageToCell:cell fromURL:[[itemAtIndex objectForKey:@"user"] objectForKey:@"profile_image_url"]];
 		//[cell setNeedsLayout];
 		//[tView setNeedsDisplay];
+
 	}
+	else
+		[cell prepareForReuse];
 	
     return cell;
 }
@@ -298,7 +297,7 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	// Return YES for supported orientations
-	return YES; //(interfaceOrientation == UIInterfaceOrientationPortrait);
+	return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
 - (void)dealloc {

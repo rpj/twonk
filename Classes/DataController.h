@@ -16,10 +16,12 @@
 	int _lastUpdateID;
 	BOOL _validUser;
 	NSMutableDictionary *_imgTrack;
+	NSInteger _lastRateLimitRemaining;
     NSMutableArray *list;
 }
 
 @property (nonatomic, retain) NSString* lastReqID;
+@property (nonatomic, readonly) NSInteger requestsRemaining;
 
 - (unsigned)countOfList;
 - (id)objectInListAtIndex:(unsigned)theIndex;

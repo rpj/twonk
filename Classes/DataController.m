@@ -9,15 +9,16 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 @implementation DataController
 
 @synthesize lastReqID = _lastReqID;
+@synthesize requestsRemaining = _lastRateLimitRemaining;
 
 - (void)requestSucceeded:(NSString *)requestIdentifier;
 {
 	if ([requestIdentifier isEqualToString:_lastReqID]) {
+		[_twitter getRateLimitStatus];
+		
 		if (!_validUser) {
 			_validUser = YES;
-			NSLog(@"last is %@", self.lastReqID);
 			self.lastReqID = [_twitter getFollowedTimelineFor:nil since:nil startingAtPage:0 count:TWEET_NUM];
-			NSLog(@"friend fetch -> %@", self.lastReqID);
 		}
 	}
 }
@@ -66,6 +67,13 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 
 - (void)miscInfoReceived:(NSArray *)miscInfo forRequest:(NSString *)identifier;
 {
+	NSDictionary *info = nil;
+	
+	if ([miscInfo count] && (info = [miscInfo objectAtIndex:0])) {
+		id limit = [info objectForKey:@"remaining-hits"];
+		
+		if (limit) _lastRateLimitRemaining = [limit intValue];
+	}
 }
 
 - (void)imageReceived:(UIImage *)image forRequest:(NSString *)identifier;
@@ -91,6 +99,7 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 {
 	if ((self = [super init])) {
 		_imgTrack = [[NSMutableDictionary alloc] init];
+		_lastRateLimitRemaining = -1;
 	}
 	
 	return self;
@@ -101,6 +110,7 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 	if (uname && pass) {
 		_validUser = NO;
 		_lastUpdateID = -1;
+		_lastRateLimitRemaining = -1;
 		
 		NSAutoreleasePool *tPool = [[NSAutoreleasePool alloc] init];
 		
@@ -109,6 +119,7 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 		
 		[_twitter setUsername:uname password:pass];
 		self.lastReqID = [_twitter checkUserCredentials];
+		[_twitter getRateLimitStatus];
 		NSLog(@"Check cred for %@/%@ -> %@", uname, pass, self.lastReqID);
 		
 		[tPool release];
