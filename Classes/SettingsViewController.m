@@ -8,7 +8,6 @@
 
 #import "SettingsViewController.h"
 
-
 @implementation SettingsViewController
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -20,11 +19,11 @@
 	return self;
 }
 
-- (void)viewDidAppear:(BOOL)animated
+- (void)viewWillAppear:(BOOL)animated
 {
+	self.navigationItem.title = @"Setup";
+	
 	NSUserDefaults *udef = [NSUserDefaults standardUserDefaults];
-	NSString *uname = [udef stringForKey:@"username"];
-	NSString *pass = [udef stringForKey:@"password"];
 	
 	if (![udef objectForKey:@"mobileTwitter"]) {
 		[udef setBool:YES forKey:@"mobileTwitter"];
@@ -36,8 +35,24 @@
 		[udef synchronize];
 	}
 	
+	if (![udef objectForKey:@"showRateInfo"]) {
+		[udef setBool:NO forKey:@"showRateInfo"];
+		[udef synchronize];
+	}
+	
 	_mobileSwitch.on = [udef boolForKey:@"mobileTwitter"];
+	_reqSwitch.on = [udef boolForKey:@"showRateInfo"];
 	_blackSwitch.on = [udef boolForKey:@"blackUI"];
+	
+	[super viewWillAppear:animated];
+}
+
+
+- (void)viewDidAppear:(BOOL)animated
+{
+	NSUserDefaults *udef = [NSUserDefaults standardUserDefaults];
+	NSString *uname = [udef stringForKey:@"username"];
+	NSString *pass = [udef stringForKey:@"password"];
 	
 	if (uname && ![uname isEqualToString:@""] && pass && ![pass isEqualToString:@""]) {
 		_username.text = _enterUser = uname;
@@ -47,7 +62,6 @@
 		[self.navigationItem setHidesBackButton:YES animated:YES];
 	}
 	
-	self.navigationItem.title = @"User Setup";
 	[super viewDidAppear:animated];
 }
 
@@ -66,10 +80,14 @@
 		}
 	}
 	
+	[[NSNotificationCenter defaultCenter] postNotificationName:kSettingsViewWentAway object:self];
 	[super viewWillDisappear:animated];
 }
 
-
+- (void) _broadcastChanges;
+{
+	[[NSNotificationCenter defaultCenter] postNotificationName:kSettingsBroadcastChange object:self];
+}
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	// Return YES for supported orientations
@@ -108,13 +126,18 @@
 	return YES;
 }
 
-- (IBAction) mobileSwitchToggle:(id)sender;
+- (IBAction) switchToggle:(id)sender;
 {
-	[[NSUserDefaults standardUserDefaults] setBool:_mobileSwitch.on forKey:@"mobileTwitter"];
-}
-
-- (IBAction) blackSwitchToggle:(id)sender;
-{
-	[[NSUserDefaults standardUserDefaults] setBool:_blackSwitch.on forKey:@"blackUI"];
+	if ([sender isKindOfClass:[UISwitch class]]) {
+		if (sender == _mobileSwitch) {
+			[[NSUserDefaults standardUserDefaults] setBool:_mobileSwitch.on forKey:@"mobileTwitter"];
+		} else if (sender == _blackSwitch) {
+			[[NSUserDefaults standardUserDefaults] setBool:_blackSwitch.on forKey:@"blackUI"];
+		} else if (sender == _reqSwitch) {
+			[[NSUserDefaults standardUserDefaults] setBool:_reqSwitch.on forKey:@"showRateInfo"];
+		}
+		
+		[self _broadcastChanges];
+	}
 }
 @end

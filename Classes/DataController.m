@@ -82,7 +82,7 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 	
 	if (arr && [arr count] == 2) {
 		UITableViewCell *cell = [arr objectAtIndex:0];
-		NSString *url = [arr objectAtIndex:1];
+		NSString *url = [[arr objectAtIndex:1] retain];
 		
 		if (cell && url) {
 			cell.image = image;
@@ -92,6 +92,8 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 			[_imgTrack removeObjectForKey:identifier];
 			[_imgTrack setObject:image forKey:url];
 		}
+		
+		[url release];
 	}
 }
 
@@ -120,7 +122,6 @@ Derieved directly form DataController.m in Apple's "DrillDown" sample project
 		[_twitter setUsername:uname password:pass];
 		self.lastReqID = [_twitter checkUserCredentials];
 		[_twitter getRateLimitStatus];
-		NSLog(@"Check cred for %@/%@ -> %@", uname, pass, self.lastReqID);
 		
 		[tPool release];
 	}

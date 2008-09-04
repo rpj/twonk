@@ -7,21 +7,50 @@
 #import "SettingsViewController.h"
 #import "TwitterCell.h"
 
-#define kRowHeightDefault		90.0
-#define kDefaultTweetFontSize	12.0
-#define kDefaultRefreshInterval	30.0
-#define kBackgroundColor		[UIColor blackColor]
-
-//[UIColor colorWithRed:0.10 green:0.10 blue:0.15 alpha:1.0]
+#define kRowHeightDefault			90.0
+#define kDefaultTweetFontSize		12.0
+#define kDefaultRefreshInterval		60.0
+#define kBlackThemeBackground		[UIColor blackColor]
+#define kBlackThemeTextColor		[UIColor whiteColor]
+#define kNotBlackThemeBackground	[UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0]
+#define kNotBlackThemeTextColor		[UIColor blackColor]
 
 
 @implementation RootViewController
 
 @synthesize dataController;
+@synthesize toolbar;
+@dynamic barText;
+
+- (UIBarButtonItem*) _barTextItem;
+{
+	for (UIBarItem *bi in self.toolbar.items)
+		if (bi.tag == 42)
+			return (UIBarButtonItem*)bi;
+	
+	return nil;
+}
+
+- (NSString*) barText;
+{
+	return [self _barTextItem].title;
+}
+
+- (void) setBarText:(NSString*)text;
+{
+	UIBarItem *bi = [self _barTextItem];
+	if (bi) bi.title = text;
+}
 
 - (void) _clearPrompt:(NSTimer*)timer;
 {
 	self.navigationItem.prompt = nil;
+}
+
+- (void) _clearBarText:(NSTimer*)timer;
+{
+	self.barText = [[NSUserDefaults standardUserDefaults] boolForKey:@"showRateInfo"] ? 
+	[NSString stringWithFormat:@"(%d)", dataController.requestsRemaining] : @"";
 }
 
 - (void) _errorPosted:(NSNotification*)notify;
@@ -77,10 +106,13 @@
 {
 	[self.tableView reloadData];
 	
-	self.title = NSLocalizedString(([NSString stringWithFormat:@"%@ (%d)", 
-									 [[NSUserDefaults standardUserDefaults] stringForKey:@"username"], dataController.requestsRemaining]), 
+	self.title = NSLocalizedString(([NSString stringWithFormat:@"%@", [[NSUserDefaults standardUserDefaults] stringForKey:@"username"]]), 
 								   @"Master view navigation title");
-	self.navigationItem.prompt = nil;
+	
+	
+	[self _clearBarText:nil];
+	[self _clearPrompt:nil];
+	
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 }
 
@@ -111,14 +143,39 @@
 	else {
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 		self.title = NSLocalizedString(([NSString stringWithFormat:@"%@", user]), @"Master view navigation title");
+		self.barText = @"Loading...";
 		[self.dataController reloadWithStandardUserInfo];
 	}
 }
 
+- (void) _composeButton:(id)sender;
+{
+	NSLog(@"Compose ye not.");
+}
 
 - (void) settingsButton:(id)sender;
 {
-	[self _showSettings];
+	if (![self.navigationController.topViewController isKindOfClass:[SettingsViewController class]]) {
+		[self _showSettings];
+		((UIBarButtonItem*)[self.toolbar.items objectAtIndex:0]).enabled = NO;
+	}
+}
+
+- (void) _settingsChanged:(NSNotification*)notify;
+{
+	[self _clearBarText:nil];
+	
+	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"blackUI"] != _isBlack) {
+		_isBlack = !_isBlack;
+		self.tableView.backgroundColor = _isBlack ? kBlackThemeBackground : kNotBlackThemeBackground;
+		
+		[self.tableView reloadData];
+	}
+}
+
+- (void) _settingsWentAway:(NSNotification*)notify;
+{
+	((UIBarButtonItem*)[self.toolbar.items objectAtIndex:0]).enabled = YES;
 }
 
 - (void) _enableRefresh:(NSTimer*)timer;
@@ -134,7 +191,7 @@
 		[_lastRefresh release];
 		_lastRefresh = [[NSDate date] retain];
 		_refreshButton.enabled = NO;
-		self.navigationItem.prompt = @"Refreshing...";
+		self.barText = @"Refreshing...";
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 		[self.dataController refreshFriendsTimeline];
 		[NSTimer scheduledTimerWithTimeInterval:kDefaultRefreshInterval target:self selector:@selector(_enableRefresh:) userInfo:nil repeats:NO];
@@ -145,14 +202,14 @@
 - (id)initWithStyle:(UITableViewStyle)style {
     if (self = [super initWithStyle:style]) {
         self.title = NSLocalizedString(@"Twonk", @"Master view navigation title");
-		self.navigationItem.prompt = @"Loading...";
 		self.dataController = nil;
+		
+		_isBlack = [[NSUserDefaults standardUserDefaults] boolForKey:@"blackUI"];
 		
 		UITableView *table = (UITableView*)self.view;
 		table.rowHeight = kRowHeightDefault;
 		table.separatorStyle = UITableViewCellSeparatorStyleNone;
-		table.separatorColor = [UIColor whiteColor];
-		table.backgroundColor = kBackgroundColor;
+		table.backgroundColor = _isBlack ? kBlackThemeBackground : kNotBlackThemeBackground;
 		
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 		
@@ -161,6 +218,8 @@
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_dataUpdated:) name:kDataControllerUpdatedData object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_errorPosted:) name:kDataControllerTwitterError object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_settingsChanged:) name:kSettingsBroadcastChange object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_settingsWentAway:) name:kSettingsViewWentAway object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_userAndPassSet:) name:@"UserAndPassSet" object:nil];
     }
 	
@@ -170,10 +229,9 @@
 - (void) finishSetup;
 {
 	if ([self navigationItem]) {
-		[[self navigationItem] setRightBarButtonItem:[[UIBarButtonItem alloc] initWithTitle:@"Setup"
-																					  style:UIBarButtonItemStylePlain
-																					 target:self 
-																					 action:@selector(settingsButton:)] animated:YES];
+		[[self navigationItem] setRightBarButtonItem:[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
+																								   target:self 
+																								   action:@selector(_composeButton:)] animated:YES];
 		
 		_refreshButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
 																	   target:self
@@ -223,7 +281,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	NSDictionary *itemAtIndex = (NSDictionary*)[dataController objectInListAtIndex:indexPath.row];
 	NSString *idStr = [itemAtIndex objectForKey:@"id"];
-	NSString *cellId = [NSString stringWithFormat:@"cellID_%@", idStr];
+	NSString *cellId = [NSString stringWithFormat:@"cellID_%d_%@", _isBlack, idStr];
 	
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
 	
@@ -232,7 +290,7 @@
         cell.accessoryType = UITableViewCellAccessoryNone; //UITableViewCellAccessoryDetailDisclosureButton;
 		cell.lineBreakMode = UILineBreakModeWordWrap;
 		cell.backgroundView = [[UIView alloc] initWithFrame:cell.bounds];
-		cell.backgroundView.backgroundColor = kBackgroundColor;
+		cell.backgroundView.backgroundColor = _isBlack ? kBlackThemeBackground : kNotBlackThemeBackground;
 		
 		UIView *label = [cell.contentView.subviews objectAtIndex:0];
 		if (label) [label removeFromSuperview];
@@ -251,8 +309,8 @@
 			tView.bounces = NO;
 			tView.userInteractionEnabled = NO;
 			tView.font = [UIFont boldSystemFontOfSize: kDefaultTweetFontSize];
-			tView.textColor = [UIColor whiteColor];
-			tView.backgroundColor = kBackgroundColor;
+			tView.textColor = _isBlack ? kBlackThemeTextColor : kNotBlackThemeTextColor;
+			tView.backgroundColor = _isBlack ? kBlackThemeBackground : kNotBlackThemeBackground;
 			
 			[cell.contentView addSubview:tView];
 			[tView release];

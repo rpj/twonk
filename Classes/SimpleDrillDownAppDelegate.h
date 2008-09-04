@@ -51,9 +51,11 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 @interface SimpleDrillDownAppDelegate : NSObject <UIApplicationDelegate> {
     UIWindow *window;
 	UINavigationController *navigationController;
+	UIToolbar *toolbar;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) UINavigationController *navigationController;
+@property (nonatomic, retain) UIToolbar *toolbar;
 
 @end
